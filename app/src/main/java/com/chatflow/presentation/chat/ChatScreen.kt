@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.chatflow.data.local.db.MessageEntity
+import com.chatflow.presentation.components.*
+import com.chatflow.util.MarkdownParser
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,8 +44,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                 IconButton(
                     onClick = {
                         if (inputText.isNotBlank()) {
-                            // For now, using a hardcoded Groq key ID. 
-                            // In a real app, this comes from settings/state.
+                            // Note: In a real app, apiKeyId would be fetched from a SelectedApiKey state
                             viewModel.sendMessage(inputText, "groq", "some_api_key_id", "llama-3.1-70b-versatile")
                             inputText = ""
                         }
@@ -59,7 +61,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                 .padding(padding)
                 .fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(messages) { msg ->
                 ChatBubble(msg)
@@ -76,13 +78,12 @@ fun ChatBubble(msg: MessageEntity) {
         horizontalAlignment = if (isUser) Alignment.End else Alignment.Start
     ) {
         if (!isUser && !msg.reasoning.isNullOrBlank()) {
-            Text(
-                text = "🧠 Thinking: ${msg.reasoning}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(bottom = 4.dp)
+            ThinkingCard(
+                reasoning = msg.reasoning,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
+        
         Surface(
             color = if (isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(
@@ -90,14 +91,34 @@ fun ChatBubble(msg: MessageEntity) {
                 bottomStart = if (isUser) 16.dp else 0.dp,
                 bottomEnd = if (isUser) 0.dp else 16.dp
             ),
-            modifier = Modifier.widthIn(max = 300.dp)
+            modifier = Modifier.widthIn(max = 320.dp)
         ) {
-            Text(
-                text = msg.content,
-                modifier = Modifier.padding(12.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Column(modifier = Modifier.padding(12.dp)) {
+                if (isUser) {
+                    Text(
+                        text = msg.content,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
+                } else {
+                    // Parse markdown and render chunks (Text or Code)
+                    val chunks = MarkdownParser.parse(msg.content)
+                    chunks.forEach { chunk ->
+                        if (chunk.isCode) {
+                            CodeBlockView(
+                                code = chunk.text,
+                                language = chunk.language,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        } else {
+                            MarkdownText(
+                                text = chunk.text,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
