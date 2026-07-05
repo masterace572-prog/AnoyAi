@@ -18,19 +18,29 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.chatflow.data.local.db.MessageEntity
 import com.chatflow.presentation.components.*
 import com.chatflow.util.MarkdownParser
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val messages by viewModel.messages.collectAsState()
     val selectedModel by viewModel.selectedModel.collectAsState()
+    val isTyping by viewModel.isTyping.collectAsState()
     var inputText by remember { mutableStateOf("") }
     var showModelPicker by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    // Modal Bottom Sheet for Model Selection
+    // Handle error messages
+    LaunchedEffect(Unit) {
+        viewModel.errorMessage.collectLatest {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        }
+    }
+
     if (showModelPicker) {
         ModalBottomSheet(onDismissRequest = { showModelPicker = false }) {
-            // Using dummy data for the picker for now
             ModelPicker(
                 models = listOf(
                     com.chatflow.domain.model.AiModel("llama-3.1-70b-versatile", "groq", "Llama 3.1 70B", true, false, 128000),
@@ -59,7 +69,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                     ) 
                 },
                 actions = {
-                    IconButton(onClick = { /* Settings */ }) {
+                    IconButton(onClick = { /* Go to settings */ }) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
                 }
@@ -103,6 +113,11 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
         ) {
             items(messages) { msg ->
                 ChatBubble(msg)
+            }
+            if (isTyping) {
+                item {
+                    TypingIndicator()
+                }
             }
         }
     }
