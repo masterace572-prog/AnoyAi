@@ -30,9 +30,8 @@ fun TypingIndicator(modifier: Modifier = Modifier) {
         initialValue = 0.6f,
         targetValue = 1.2f,
         animationSpec = infiniteRepeatable(
-            animation = tween(600, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse,
-            initialStartOffset = OffsetAnimationSpec(delayMillis = 200) // Wait, this is wrong API
+            animation = tween(600, delayMillis = 200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
         ),
         label = "dot2"
     )

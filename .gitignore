@@ -1,0 +1,9 @@
+/.gradle/
+/build/
+/app/build/
+/*.iml
+.idea/
+local.properties
+.android/
+android-sdk/
+gradle-8.6/

@@ -34,6 +34,12 @@ class ChatViewModel @Inject constructor(
     private val _selectedApiKeyId = MutableStateFlow<String?>(null)
     val selectedApiKeyId: StateFlow<String?> = _selectedApiKeyId
 
+    private val _isTyping = MutableStateFlow(false)
+    val isTyping: StateFlow<Boolean> = _isTyping
+
+    private val _errorMessage = MutableSharedFlow<String>()
+    val errorMessage: SharedFlow<String> = _errorMessage
+
     private val currentChatId = "default_chat"
 
     init {
@@ -57,6 +63,7 @@ class ChatViewModel @Inject constructor(
         val apiKeyId = _selectedApiKeyId.value ?: return
         
         viewModelScope.launch {
+            _isTyping.value = true
             val userMsg = MessageEntity(
                 id = UUID.randomUUID().toString(),
                 chatId = currentChatId,
@@ -118,7 +125,9 @@ class ChatViewModel @Inject constructor(
                 ))
                 
             } catch (e: Exception) {
-                // Handle error
+                _errorMessage.emit("Error: ${e.localizedMessage}")
+            } finally {
+                _isTyping.value = false
             }
         }
     }

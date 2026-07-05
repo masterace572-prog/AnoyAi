@@ -9,7 +9,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.chatflow.presentation.navigation.ChatFlowNavHost
 import com.chatflow.presentation.theme.ChatFlowTheme
-import dagger.hilt.android.AndroidApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

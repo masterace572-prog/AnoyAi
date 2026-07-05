@@ -5,6 +5,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
+import com.chatflow.presentation.chat.ChatScreen
+import com.chatflow.presentation.settings.ApiKeyScreen
+import com.chatflow.presentation.settings.SettingsScreen
 
 sealed class Screen(val route: String) {
     object Chat : Screen("chat")
