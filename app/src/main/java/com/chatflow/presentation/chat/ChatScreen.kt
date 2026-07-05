@@ -24,7 +24,10 @@ import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
+fun ChatScreen(
+    navController: NavHostController,
+    viewModel: ChatViewModel = hiltViewModel()
+) {
     val messages by viewModel.messages.collectAsState()
     val selectedModel by viewModel.selectedModel.collectAsState()
     val isTyping by viewModel.isTyping.collectAsState()
@@ -69,7 +72,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                     ) 
                 },
                 actions = {
-                    IconButton(onClick = { /* Go to settings */ }) {
+                    IconButton(onClick = { navController.navigate("settings") }) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
                 }

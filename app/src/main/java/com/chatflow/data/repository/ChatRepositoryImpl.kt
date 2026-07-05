@@ -14,6 +14,10 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun getChatById(chatId: String): ChatEntity? = chatDao.getChatById(chatId)
     override suspend fun saveChat(chat: ChatEntity) = chatDao.insertChat(chat)
     override suspend fun deleteChat(chat: ChatEntity) = chatDao.deleteChat(chat)
+    override suspend fun clearAllChats() {
+        chatDao.deleteAllMessages()
+        chatDao.deleteAllChats()
+    }
     override fun getMessagesForChat(chatId: String): Flow<List<MessageEntity>> = chatDao.getMessagesByChat(chatId)
     override suspend fun saveMessage(message: MessageEntity) = chatDao.insertMessage(message)
 }

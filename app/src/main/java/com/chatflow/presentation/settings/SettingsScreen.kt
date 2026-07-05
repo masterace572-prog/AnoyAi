@@ -13,12 +13,39 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController) {
+fun SettingsScreen(
+    navController: NavController,
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
     var darkTheme by remember { mutableStateOf(true) }
+    var showClearAllDialog by remember { mutableStateOf(false) }
+
+    if (showClearAllDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearAllDialog = false },
+            title = { Text("Clear All Chats?") },
+            text = { Text("This will permanently delete all your conversations and messages. This action cannot be undone.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.clearAllChats()
+                    showClearAllDialog = false
+                }) {
+                    Text("Clear All", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearAllDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Settings") }) }
@@ -62,7 +89,7 @@ fun SettingsScreen(navController: NavController) {
                     icon = Icons.Default.ClearAll,
                     title = "Clear All Chats",
                     subtitle = "This action cannot be undone",
-                    onClick = { /* TODO: Implementation */ },
+                    onClick = { showClearAllDialog = true },
                     textColor = MaterialTheme.colorScheme.error
                 )
             }

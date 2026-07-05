@@ -21,7 +21,7 @@ fun ChatFlowNavHost() {
         startDestination = Screen.Chat.route
     ) {
         composable(Screen.Chat.route) {
-            ChatScreen()
+            ChatScreen(navController)
         }
         composable(Screen.Settings.route) {
             SettingsScreen(navController)
