@@ -26,7 +26,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           # Uses a fixed version of Gradle compatible with our AGP if gradlew is missing 
-          gradle-version: '9.3.1'
+          gradle-version: '8.6'
 
       - name: Generate Debug Keystore
         run: keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "cn=Unknown, ou=Unknown, o=Unknown, c=Unknown"
