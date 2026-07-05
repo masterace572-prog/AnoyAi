@@ -29,8 +29,7 @@ fun ChatFlowNavHost() {
             PlaceholderScreen("Settings Screen")
         }
         composable(Screen.ApiKeys.route) {
-            // ApiKeyScreen(navController) // To be implemented
-            PlaceholderScreen("API Keys Screen")
+            ApiKeyScreen()
         }
     }
 }
