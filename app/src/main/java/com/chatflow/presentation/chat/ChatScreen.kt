@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,10 +23,48 @@ import com.chatflow.util.MarkdownParser
 @Composable
 fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val messages by viewModel.messages.collectAsState()
+    val selectedModel by viewModel.selectedModel.collectAsState()
     var inputText by remember { mutableStateOf("") }
+    var showModelPicker by remember { mutableStateOf(false) }
+
+    // Modal Bottom Sheet for Model Selection
+    if (showModelPicker) {
+        ModalBottomSheet(onDismissRequest = { showModelPicker = false }) {
+            // Using dummy data for the picker for now
+            ModelPicker(
+                models = listOf(
+                    com.chatflow.domain.model.AiModel("llama-3.1-70b-versatile", "groq", "Llama 3.1 70B", true, false, 128000),
+                    com.chatflow.domain.model.AiModel("llama3-8b-8192", "groq", "Llama 3 8B", true, false, 8192),
+                    com.chatflow.domain.model.AiModel("deepseek-r1-distill-llama-70b", "groq", "DeepSeek R1 (Distill)", true, true, 128000)
+                ),
+                selectedModel = selectedModel,
+                onModelSelected = { 
+                    viewModel.setModel(it)
+                    showModelPicker = false
+                },
+                freeOnly = false,
+                onFreeOnlyChanged = {}
+            )
+        }
+    }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("ChatFlow AI") }) },
+        topBar = { 
+            CenterAlignedTopAppBar(
+                title = { 
+                    Text(
+                        text = selectedModel?.displayName ?: "Select Model", 
+                        modifier = Modifier.clickable { showModelPicker = true },
+                        style = MaterialTheme.typography.titleMedium
+                    ) 
+                },
+                actions = {
+                    IconButton(onClick = { /* Settings */ }) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    }
+                }
+            )
+        },
         bottomBar = {
             Row(
                 modifier = Modifier
@@ -44,8 +83,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                 IconButton(
                     onClick = {
                         if (inputText.isNotBlank()) {
-                            // Note: In a real app, apiKeyId would be fetched from a SelectedApiKey state
-                            viewModel.sendMessage(inputText, "groq", "some_api_key_id", "llama-3.1-70b-versatile")
+                            viewModel.sendMessage(inputText)
                             inputText = ""
                         }
                     },
@@ -101,7 +139,6 @@ fun ChatBubble(msg: MessageEntity) {
                         color = Color.White
                     )
                 } else {
-                    // Parse markdown and render chunks (Text or Code)
                     val chunks = MarkdownParser.parse(msg.content)
                     chunks.forEach { chunk ->
                         if (chunk.isCode) {
