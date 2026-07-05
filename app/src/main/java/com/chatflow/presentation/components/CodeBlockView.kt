@@ -1,9 +1,9 @@
 package com.chatflow.presentation.components
 
-import android.widget.ClipboardManager
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,15 +30,22 @@ fun CodeBlockView(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFF1E1E1E), RoundedCornerShape(8.dp))
-            .padding(0.dp)
+            .background(
+                Color(0xFF1E1E1E),
+                RoundedCornerShape(8.dp)
+            )
     ) {
-        // Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF333333), RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                .padding(horizontal = 12.dp, vertical = 4.dp),
+                .background(
+                    Color(0xFF333333),
+                    RoundedCornerShape(
+                        topStart = 8.dp,
+                        topEnd = 8.dp
+                    )
+                )
+                .padding(horizontal = 12.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -48,13 +55,20 @@ fun CodeBlockView(
                 color = Color.LightGray,
                 fontSize = 11.sp
             )
+
             IconButton(
+                modifier = Modifier.size(24.dp),
                 onClick = {
-                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("code", code))
+                    val clipboard = context.getSystemService(
+                        Context.CLIPBOARD_SERVICE
+                    ) as ClipboardManager
+
+                    clipboard.setPrimaryClip(
+                        ClipData.newPlainText("code", code)
+                    )
+
                     copied = true
-                },
-                modifier = Modifier.size(24.dp)
+                }
             ) {
                 Icon(
                     imageVector = Icons.Default.ContentCopy,
@@ -64,8 +78,7 @@ fun CodeBlockView(
                 )
             }
         }
-        
-        // Code Content
+
         Text(
             text = code,
             modifier = Modifier.padding(12.dp),
