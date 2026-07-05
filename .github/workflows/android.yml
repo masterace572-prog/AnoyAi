@@ -20,22 +20,18 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Install Android SDK
+    - name: Install Android SDK Components
       run: |
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-        unzip -q commandlinetools-linux-11076708_latest.zip -d $HOME/android-sdk/cmdline-tools
-        mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-        echo "ANDROID_HOME=$HOME/android-sdk" >> ~/.bashrc
-        echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:\$PATH" >> ~/.bashrc
-        # Accept licenses
-        yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+        # Use the pre-installed Android SDK on GitHub runners
+        export ANDROID_HOME=$ANDROID_SDK_ROOT
+        # Accept licenses and install required components
+        yes | sdkmanager --licenses
+        sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
     - name: Build with Gradle
       run: |
-        # Set environment variables for this step
-        export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH
+        # Ensure we use the system Android SDK
+        export ANDROID_HOME=$ANDROID_SDK_ROOT
         
         # Install Gradle 8.6
         wget -q https://services.gradle.org/distributions/gradle-8.6-bin.zip
