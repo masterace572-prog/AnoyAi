@@ -24,8 +24,7 @@ fun ChatFlowNavHost() {
             ChatScreen()
         }
         composable(Screen.Settings.route) {
-            // SettingsScreen(navController) // To be implemented
-            PlaceholderScreen("Settings Screen")
+            SettingsScreen(navController)
         }
         composable(Screen.ApiKeys.route) {
             ApiKeyScreen()
