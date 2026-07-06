@@ -24,21 +24,12 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-        with:
-          # Uses a fixed version of Gradle compatible with our AGP if gradlew is missing 
-          gradle-version: '8.6'
-
-      - name: Generate Debug Keystore
-        run: keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "cn=Unknown, ou=Unknown, o=Unknown, c=Unknown"
-
-      - name: Print Keystore Fingerprints
-        run: keytool -list -v -keystore debug.keystore -alias androiddebugkey -storepass android
 
       - name: Build Debug APK
-        run: gradle assembleDebug
+        run: ./gradlew assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AnoAi-debug-apk
+          name: AnoyAi-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
